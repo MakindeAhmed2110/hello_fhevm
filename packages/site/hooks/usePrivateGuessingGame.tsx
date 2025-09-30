@@ -222,7 +222,6 @@ export const usePrivateGuessingGame = (parameters: {
   const canDecrypt = useMemo(() => {
     return (
       privateGuessingGame.address &&
-      instance &&
       ethersSigner &&
       !isRefreshing &&
       !isDecrypting &&
@@ -231,7 +230,6 @@ export const usePrivateGuessingGame = (parameters: {
     );
   }, [
     privateGuessingGame.address,
-    instance,
     ethersSigner,
     isRefreshing,
     isDecrypting,
@@ -246,7 +244,12 @@ export const usePrivateGuessingGame = (parameters: {
       return;
     }
 
-    if (!privateGuessingGame.address || !instance || !ethersSigner) {
+    if (!privateGuessingGame.address || !ethersSigner) {
+      return;
+    }
+
+    if (!instance) {
+      setMessage("FHEVM instance not available. Please wait for initialization.");
       return;
     }
 
@@ -327,7 +330,9 @@ export const usePrivateGuessingGame = (parameters: {
           setClearIsGreater({ handle: isGreaterHandle, clear: res[isGreaterHandle] });
         }
 
-        setMessage(`Hint decrypted: isEqual=${res[isEqualHandle]}, isGreater=${res[isGreaterHandle]}`);
+        const isEqualValue = isEqualHandle && res[isEqualHandle] !== undefined ? res[isEqualHandle] : 'N/A';
+        const isGreaterValue = isGreaterHandle && res[isGreaterHandle] !== undefined ? res[isGreaterHandle] : 'N/A';
+        setMessage(`Hint decrypted: isEqual=${isEqualValue}, isGreater=${isGreaterValue}`);
       } finally {
         isDecryptingRef.current = false;
         setIsDecrypting(false);
@@ -359,11 +364,9 @@ export const usePrivateGuessingGame = (parameters: {
       instance &&
       ethersSigner &&
       !isRefreshing &&
-      !isSettingSecret &&
-      !gameActive &&
-      owner === ethersSigner.address
+      !isSettingSecret
     );
-  }, [privateGuessingGame.address, instance, ethersSigner, isRefreshing, isSettingSecret, gameActive, owner]);
+  }, [privateGuessingGame.address, instance, ethersSigner, isRefreshing, isSettingSecret]);
 
   const setSecret = useCallback(
     (secretNumber: number) => {
@@ -460,13 +463,11 @@ export const usePrivateGuessingGame = (parameters: {
   const canMakeGuess = useMemo(() => {
     return (
       privateGuessingGame.address &&
-      instance &&
       ethersSigner &&
       !isRefreshing &&
-      !isMakingGuess &&
-      gameActive
+      !isMakingGuess
     );
-  }, [privateGuessingGame.address, instance, ethersSigner, isRefreshing, isMakingGuess, gameActive]);
+  }, [privateGuessingGame.address, ethersSigner, isRefreshing, isMakingGuess]);
 
   const makeGuess = useCallback(
     (guessNumber: number) => {
@@ -474,7 +475,12 @@ export const usePrivateGuessingGame = (parameters: {
         return;
       }
 
-      if (!privateGuessingGame.address || !instance || !ethersSigner || guessNumber < 1 || guessNumber > 100) {
+      if (!privateGuessingGame.address || !ethersSigner || guessNumber < 1 || guessNumber > 100) {
+        return;
+      }
+
+      if (!instance) {
+        setMessage("FHEVM instance not available. Please wait for initialization.");
         return;
       }
 
@@ -563,13 +569,11 @@ export const usePrivateGuessingGame = (parameters: {
   const canGetHint = useMemo(() => {
     return (
       privateGuessingGame.address &&
-      instance &&
       ethersSigner &&
       !isRefreshing &&
-      !isGettingHint &&
-      gameActive
+      !isGettingHint
     );
-  }, [privateGuessingGame.address, instance, ethersSigner, isRefreshing, isGettingHint, gameActive]);
+  }, [privateGuessingGame.address, ethersSigner, isRefreshing, isGettingHint]);
 
   const getHint = useCallback(
     (guessNumber: number) => {
@@ -577,7 +581,12 @@ export const usePrivateGuessingGame = (parameters: {
         return;
       }
 
-      if (!privateGuessingGame.address || !instance || !ethersSigner || guessNumber < 1 || guessNumber > 100) {
+      if (!privateGuessingGame.address || !ethersSigner || guessNumber < 1 || guessNumber > 100) {
+        return;
+      }
+
+      if (!instance) {
+        setMessage("FHEVM instance not available. Please wait for initialization.");
         return;
       }
 

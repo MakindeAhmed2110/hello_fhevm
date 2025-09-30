@@ -29,3 +29,4 @@ export default func;
 
 func.id = "deploy_privateGuessingGame"; // id required to prevent reexecution
 func.tags = ["PrivateGuessingGame"];
+

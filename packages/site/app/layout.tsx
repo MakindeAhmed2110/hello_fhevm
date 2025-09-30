@@ -15,10 +15,15 @@ export default async function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`zama-bg text-foreground antialiased`}>
-        <div className="fixed inset-0 w-full h-full zama-bg z-[-20] min-w-[850px]"></div>
-        <main className="flex flex-col max-w-screen-lg mx-auto pb-20 min-w-[850px]">
-          <nav className="flex w-full px-3 md:px-0 h-fit py-10 justify-between items-center">
+      <body className="text-foreground antialiased">
+        <div 
+          className="fixed inset-0 w-full h-full z-[-20] min-w-[850px] bg-cover bg-center bg-no-repeat"
+          style={{
+            backgroundImage: "url('/background.png')"
+          }}
+        ></div>
+        <main className="flex flex-col w-full h-screen">
+          <nav className="flex w-full px-3 md:px-0 h-fit py-10 justify-between items-center relative z-10">
             <Image
               src="/zama-logo.svg"
               alt="Zama Logo"

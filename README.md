@@ -1,138 +1,141 @@
-# Private Number Guessing Game with FHEVM
+# Private Number Guessing Game - FHEVM React Template
 
-A fully homomorphic encryption (FHE) based number guessing game built with Zama's FHEVM, allowing players to guess a secret number while keeping all data encrypted throughout the game.
+A fully homomorphic encryption (FHE) powered number guessing game built with Zama's FHEVM technology. Players can make encrypted guesses and receive encrypted hints without revealing the secret number or their guesses to anyone, including the blockchain.
 
-## 🎮 Game Overview
+## Overview
 
-This project demonstrates how to build privacy-preserving applications using Zama's FHEVM technology. The game allows:
+This project demonstrates a practical application of Fully Homomorphic Encryption (FHE) on Ethereum using Zama's FHEVM. It includes:
 
-- **Game Master**: Sets a secret number (1-100) and activates the game
-- **Players**: Make encrypted guesses and receive encrypted hints
-- **Privacy**: All operations (guessing, hint generation, comparisons) happen on encrypted data
-- **Decryption**: Players can decrypt their hint results to see if their guess was correct
+- **PrivateGuessingGame.sol**: A smart contract where a secret number is encrypted and players receive encrypted hints
+- **FHECounter.sol**: The original counter example demonstrating FHE operations
+- **React Frontend**: Next.js application with MetaMask integration for interacting with both contracts
 
-## 🏗️ Architecture
-
-### Smart Contracts
-- **`PrivateGuessingGame.sol`**: Main game contract with FHE operations
-- **`FHECounter.sol`**: Reference implementation for FHEVM patterns
-
-### Frontend
-- **React + TypeScript**: Modern web interface
-- **FHEVM React SDK**: Integration with Zama's FHEVM
-- **MetaMask Integration**: Wallet connection and transaction signing
-
-### Key Features
-- ✅ **Encrypted Secret Storage**: Secret number remains encrypted on-chain
-- ✅ **Private Comparisons**: FHE-based equality and greater-than comparisons
-- ✅ **Encrypted Hints**: Players receive encrypted hints about their guesses
-- ✅ **Decryption Interface**: User-friendly decryption of hint results
-- ✅ **Owner Controls**: Game master can set secrets and manage game state
-
-## 🚀 Quick Start
+## Quick Start
 
 ### Prerequisites
-- Node.js 20+ 
-- MetaMask wallet
-- Sepolia ETH for gas fees
+
+- Node.js (v18+)
+- MetaMask browser extension
+- Sepolia testnet ETH (for deployment)
 
 ### Installation
 
-1. **Clone the repository**
-   ```bash
-   git clone <repository-url>
-   cd fhevm-react-template
-   ```
+```bash
+# Clone the repository
+cd fhevm-react-template
 
-2. **Install dependencies**
-   ```bash
-   npm install
-   ```
+# Install dependencies (use Git Bash on Windows)
+npm install
 
-3. **Deploy contracts to Sepolia**
-   ```bash
-   cd packages/fhevm-hardhat-template
-   npx hardhat deploy --network sepolia
-   ```
+# Start local hardhat node (in one terminal)
+npm run hardhat-node
 
-4. **Start the development server**
-   ```bash
-   npm run dev-webpack:mock
-   ```
+# Deploy contracts to local node (in another terminal)
+npm run deploy:hardhat-node
 
-5. **Open in browser**
-   - Navigate to `http://localhost:3000`
-   - Connect MetaMask to Sepolia network
-   - Ensure you have Sepolia ETH for gas fees
-
-## 🎯 How to Play
-
-### For Game Masters (Contract Owner)
-
-1. **Connect Wallet**: Ensure MetaMask is connected to Sepolia
-2. **Set Secret**: Enter a number between 1-100 in the "Secret Number" field
-3. **Start Game**: Click "Set Secret & Start Game" to activate
-4. **Game Active**: Players can now make guesses and get hints
-
-### For Players
-
-1. **Make a Guess**: Enter your guess (1-100) in the input field
-2. **Get Hint**: Click "Get Hint" to receive encrypted comparison results
-3. **Decrypt Hint**: Click "Decrypt Hint" to reveal if your guess was:
-   - **Equal** to the secret number
-   - **Greater** than the secret number
-4. **Keep Guessing**: Use the hints to narrow down your next guess
-
-## 🔧 Technical Details
-
-### FHEVM Operations
-
-The game uses several FHEVM operations:
-
-```solidity
-// Encrypted equality comparison
-ebool isEqual = FHE.eq(_secretNumber, encryptedGuess);
-
-// Encrypted greater-than comparison  
-ebool isGreater = FHE.gt(encryptedGuess, _secretNumber);
-
-// Allow decryption by the caller
-FHE.allow(isEqual, msg.sender);
-FHE.allow(isGreater, msg.sender);
+# Start the frontend
+npm run dev
 ```
 
-### Contract Functions
+The app will be available at `http://localhost:3000`
 
-- **`setSecret(secretNumber, proof)`**: Sets encrypted secret and activates game
-- **`makeGuess(guess, proof)`**: Records an encrypted guess
-- **`getHint(guess, proof)`**: Returns encrypted comparison results
-- **`isGameActive()`**: Returns current game status
-- **`owner()`**: Returns contract owner address
+### Deploy to Sepolia
 
-### Frontend Integration
+```bash
+# Deploy to Sepolia testnet
+cd packages/fhevm-hardhat-template
+npx hardhat deploy --network sepolia
+```
 
-The React frontend handles:
-- **Wallet Connection**: MetaMask integration
-- **FHEVM Instance**: SDK initialization and management
-- **Encryption**: Client-side encryption of user inputs
-- **Decryption**: User-friendly decryption of results
-- **Transaction Management**: Gas estimation and transaction handling
+## How to Play
 
-## 📁 Project Structure
+1. **Connect Wallet**: Connect your MetaMask wallet (Sepolia network)
+2. **Set Secret** (Owner only): Enter a number between 1-100 and click "Set Secret & Start Game"
+3. **Make Guess**: Enter your guess (1-100) and click "Get Hint"
+4. **Decrypt Hint**: Click "Decrypt Hint" to reveal if your guess was correct
+5. **Interpret Results**:
+   - If `isEqual = true`: You guessed correctly! 🎉
+   - If `isGreater = true`: Your guess is too high
+   - If `isGreater = false`: Your guess is too low
+
+## Architecture
+
+### Smart Contract (`PrivateGuessingGame.sol`)
+
+```solidity
+// Key functions:
+setSecret(euint32, proof)      // Owner sets encrypted secret number
+getHint(euint32, proof)        // Get encrypted comparison results
+getLastHint()                  // Retrieve stored hint handles for decryption
+isGameActive()                 // Check if game is active
+owner()                        // Get contract owner
+```
+
+### Frontend
+
+- **React Components**: 
+  - `PrivateGuessingGameDemo.tsx` - Main game UI
+  - `FHECounterDemo.tsx` - Counter example UI
+  
+- **Custom Hooks**:
+  - `usePrivateGuessingGame.tsx` - Game logic and FHEVM operations
+  - `useFHECounter.tsx` - Counter logic
+  - `useMetaMaskEthersSigner.tsx` - MetaMask integration
+  - `useFhevm.tsx` - FHEVM instance management
+
+## Technical Details
+
+### Encryption Flow
+
+1. **Input Encryption**:
+   ```typescript
+   const input = instance.createEncryptedInput(contractAddress, userAddress);
+   input.add32(secretNumber);
+   const enc = await input.encrypt();
+   ```
+
+2. **Contract Call**:
+   ```typescript
+   await contract.setSecret(enc.handles[0], enc.inputProof);
+   ```
+
+3. **Hint Retrieval**:
+   ```typescript
+   const hint = await contract.getLastHint(); // Returns [isEqual, isGreater]
+   ```
+
+4. **Decryption**:
+   ```typescript
+   const sig = await FhevmDecryptionSignature.loadOrSign(...);
+   const result = await instance.userDecrypt(handles, sig...);
+   ```
+
+### FHE Operations
+
+The contract uses these FHE operations:
+- `FHE.fromExternal()` - Convert external encrypted input to internal FHE type
+- `FHE.eq()` - Encrypted equality comparison
+- `FHE.gt()` - Encrypted greater-than comparison
+- `FHE.allow()` - Grant decryption permission
+- `FHE.allowThis()` - Allow contract to use encrypted value
+
+## Project Structure
 
 ```
 fhevm-react-template/
 ├── packages/
-│   ├── fhevm-hardhat-template/     # Smart contracts
+│   ├── fhevm-hardhat-template/
 │   │   ├── contracts/
 │   │   │   ├── PrivateGuessingGame.sol
 │   │   │   └── FHECounter.sol
 │   │   ├── deploy/
+│   │   │   ├── 00_FHECounter.ts
 │   │   │   └── 01_PrivateGuessingGame.ts
-│   │   └── hardhat.config.ts
-│   ├── site/                       # React frontend
+│   │   └── test/
+│   ├── site/
 │   │   ├── app/
 │   │   │   ├── page.tsx
+│   │   │   ├── layout.tsx
 │   │   │   └── providers.tsx
 │   │   ├── components/
 │   │   │   ├── PrivateGuessingGameDemo.tsx
@@ -140,78 +143,80 @@ fhevm-react-template/
 │   │   ├── hooks/
 │   │   │   ├── usePrivateGuessingGame.tsx
 │   │   │   └── useFHECounter.tsx
-│   │   └── abi/                    # Auto-generated contract ABIs
-│   └── fhevm-react/                # FHEVM React SDK
-└── scripts/                        # Deployment scripts
+│   │   └── abi/ (auto-generated)
+│   └── postdeploy/
+└── scripts/
 ```
 
-## 🔐 Security Features
+## Security Considerations
 
-- **Encrypted Storage**: Secret numbers are never stored in plaintext
-- **Private Comparisons**: All comparisons happen on encrypted data
-- **Access Control**: Only contract owner can set secrets
-- **Input Validation**: Range checking for valid numbers (1-100)
-- **Transaction Security**: Proper gas estimation and error handling
+- **Privacy**: All guesses and comparisons are encrypted end-to-end
+- **Verifiability**: All operations are on-chain and verifiable
+- **Decryption**: Only authorized users can decrypt their hint results
+- **Owner Control**: Only the contract owner can set the secret number
 
-## 🌐 Network Support
+## Network Support
 
-### Sepolia Testnet (Recommended)
-- **Chain ID**: 11155111
-- **FHEVM Support**: Full FHEVM relayer integration
-- **Gas Fees**: Requires Sepolia ETH
+- **Local Development**: Hardhat node (chainId: 31337)
+- **Testnet**: Sepolia (chainId: 11155111)
+- **Production**: Contact Zama for mainnet access
 
-### Local Development
-- **Chain ID**: 31337
-- **FHEVM Support**: Mock FHEVM for testing
-- **Gas Fees**: Free (local network)
+## Development
 
-## 🛠️ Development
+### Running Tests
 
-### Adding New Features
+```bash
+cd packages/fhevm-hardhat-template
+npx hardhat test
+```
 
-1. **Smart Contract**: Modify `PrivateGuessingGame.sol`
-2. **Deploy**: Run `npx hardhat deploy --network sepolia`
-3. **Frontend**: Update React hooks and components
-4. **Test**: Verify functionality on Sepolia
+### Compiling Contracts
 
-### Debugging
+```bash
+cd packages/fhevm-hardhat-template
+npx hardhat compile
+```
 
-- **Console Logs**: Check browser console for FHEVM operations
-- **MetaMask**: Verify network and account connection
-- **Contract**: Use Hardhat tasks for direct contract interaction
+### Linting
 
-## 📚 Resources
+```bash
+npm run lint
+```
+
+## Troubleshooting
+
+### FHEVM SDK Not Loading
+
+- Ensure you're on Sepolia network (chainId: 11155111)
+- Check that MetaMask is connected
+- Refresh the page after connecting
+
+### Cannot Set Secret
+
+- Verify you're the contract owner
+- Ensure game is not already active
+- Check that FHEVM instance is loaded
+
+### Transaction Failures
+
+- Ensure you have sufficient Sepolia ETH
+- Check network connection
+- Verify contract is deployed on current network
+
+## Resources
 
 - [Zama FHEVM Documentation](https://docs.zama.ai/fhevm)
-- [FHEVM React SDK](https://github.com/zama-ai/fhevm-react)
-- [Sepolia Testnet](https://sepolia.etherscan.io/)
-- [MetaMask Setup](https://metamask.io/)
+- [FHEVM Solidity Library](https://github.com/zama-ai/fhevm)
+- [Hardhat Documentation](https://hardhat.org/docs)
+- [Next.js Documentation](https://nextjs.org/docs)
 
-## 🤝 Contributing
+## License
 
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Test on Sepolia testnet
-5. Submit a pull request
+MIT License - see LICENSE file for details
 
-## 📄 License
+## Support
 
-This project is licensed under the MIT License - see the LICENSE file for details.
-
-## ⚠️ Important Notes
-
-- **Testnet Only**: This is for demonstration purposes on Sepolia testnet
-- **Gas Fees**: Ensure you have sufficient Sepolia ETH for transactions
-- **Network**: Always verify you're connected to Sepolia network
-- **Security**: This is a demo - do not use for production without proper security audits
-
-## 🎉 Acknowledgments
-
-- **Zama**: For the FHEVM technology and SDK
-- **FHEVM Community**: For documentation and examples
-- **Ethereum Foundation**: For Sepolia testnet infrastructure
-
----
-
-**Happy Guessing! 🎯🔐**
+For issues or questions:
+- GitHub Issues: [Report a bug](https://github.com/zama-ai/fhevm-react-template/issues)
+- Documentation: [Zama Docs](https://docs.zama.ai)
+- Community: [Zama Discord](https://discord.fhevm.io)
