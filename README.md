@@ -1,6 +1,14 @@
-# Private Number Guessing Game - FHEVM React Template
+# Hello FHEVM -Build your first confidential dApp
 
 A fully homomorphic encryption (FHE) powered number guessing game built with Zama's FHEVM technology. Players can make encrypted guesses and receive encrypted hints without revealing the secret number or their guesses to anyone, including the blockchain.
+
+<div align="center">
+  <img src="/hello FHEVM.png" alt="hello FHEVM" width="800" height="800"/>
+</div>
+
+## Tutorial Video Link
+
+Video Link: [https://youtu.be/X6TeMC3D4cQ](https://youtu.be/X6TeMC3D4cQ)
 
 ## Overview
 
